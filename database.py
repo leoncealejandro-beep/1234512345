@@ -1,11 +1,20 @@
 from datetime import datetime
+import os
+import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 
 SERVICE_ACCOUNT = "serviceAccountKey.json"
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate(SERVICE_ACCOUNT)
+    firebase_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+
+    if firebase_json:
+        cred_dict = json.loads(firebase_json)
+        cred = credentials.Certificate(cred_dict)
+    else:
+        cred = credentials.Certificate(SERVICE_ACCOUNT)
+
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()
